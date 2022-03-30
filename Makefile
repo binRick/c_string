@@ -26,3 +26,10 @@ install:
 
 tidy:
 	@./tidy.sh
+
+pull:
+	@git pull
+
+push:
+	@git commit -am 'automated git commit'
+	@git push

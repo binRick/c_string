@@ -31,13 +31,13 @@ void module_hook(){
 
 
   void  do_ltrim(){
-    ltrimmed = cm_string->trim_left(untrimmed_string);
+    ltrimmed = cm_string->ltrim(untrimmed_string);
     log_info("left trimed %db string '%s' => %db string '%s'", strlen(untrimmed_string), untrimmed_string, strlen(ltrimmed), ltrimmed);
   }
 
 
   void do_rtrim(){
-    rtrimmed = cm_string->trim_right(untrimmed_string);
+    rtrimmed = cm_string->rtrim(untrimmed_string);
     log_info("right trimed %db string '%s' => %db string '%s'", strlen(untrimmed_string), untrimmed_string, strlen(rtrimmed), rtrimmed);
   }
 

@@ -19,8 +19,8 @@ module(string_module) {
   void *private;
 
   char * (*trim)(char *string);
-  char * (*trim_right)(char *string);
-  char * (*trim_left)(char *string);
+  char * (*rtrim)(char *string);
+  char * (*ltrim)(char *string);
 };
 
 // `string_module` module prototypes
@@ -38,12 +38,12 @@ exports(string_module) {
 module(private) {
   define(private, CLIB_MODULE);
   char * (*trim)(char *string);
-  char * (*trim_right)(char *string);
-  char * (*trim_left)(char *string);
+  char * (*rtrim)(char *string);
+  char * (*ltrim)(char *string);
 };
 
 
-static char * string_module_private_string_trim_right(char *string){
+static char * string_module_private_string_rtrim(char *string){
   log_trace("right trim():%s/%d", string);
   char *ns;
   char os[1024];
@@ -54,7 +54,7 @@ static char * string_module_private_string_trim_right(char *string){
 }
 
 
-static char * string_module_private_string_trim_left(char *string){
+static char * string_module_private_string_ltrim(char *string){
   log_trace("left trim():%s/%d", string);
   char *ns;
   char os[1024];
@@ -89,15 +89,15 @@ static char * string_module_trim(char *string){
 }
 
 
-static char * string_module_trim_left(char *string){
-  log_trace("string_module_trim_left():%s/%d", string);
-  return(require(private)->trim_left(string));
+static char * string_module_ltrim(char *string){
+  log_trace("string_module_ltrim():%s/%d", string);
+  return(require(private)->ltrim(string));
 }
 
 
-static char * string_module_trim_right(char *string){
-  log_trace("string_module_trim_right():%s/%d", string);
-  return(require(private)->trim_right(string));
+static char * string_module_rtrim(char *string){
+  log_trace("string_module_trim():%s/%d", string);
+  return(require(private)->rtrim(string));
 }
 
 
@@ -112,10 +112,10 @@ static int string_module_init(module(string_module) *exports) {
   }
 
   debug_private();
-  exports->trim       = string_module_trim;
-  exports->trim_left  = string_module_trim_left;
-  exports->trim_right = string_module_trim_right;
-  exports->private    = require(private);
+  exports->trim    = string_module_trim;
+  exports->ltrim   = string_module_ltrim;
+  exports->rtrim   = string_module_rtrim;
+  exports->private = require(private);
   debug_private();
 
   return(0);
