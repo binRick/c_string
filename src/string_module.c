@@ -1,5 +1,6 @@
 /*******************/
 #include <stdio.h>
+#include <string.h>
 /*******************/
 #include "module.h"
 /*******************/
@@ -7,11 +8,9 @@
 /*******************/
 #include "log/log.c"
 /*******************/
-#include "deps/trim/trim.c"
-/*******************/
-
-/*******************/
 #include "../include/globals.h"
 #include "../src/globals.c"
+/*******************/
+#include "../deps/trim/trim.c"
 /*******************/
 

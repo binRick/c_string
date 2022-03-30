@@ -1,16 +1,15 @@
 /***********************************/
 #ifndef MODULE_LOG_LEVEL
-#define MODULE_LOG_LEVEL    LOG_DEBUG
+#define MODULE_LOG_LEVEL    LOG_TRACE
 #endif
 /***********************************/
 #include <stdio.h>
 /***********************************/
 #include "../include/module.h"
 /***********************************/
-#include "log/log.h"
+#include "../deps/trim/trim.h"
 /***********************************/
 /***********************************/
-#include "deps/trim/trim.h"
 /***********************************/
 /***********************************/
 
@@ -19,8 +18,9 @@ module(string_module) {
   defaults(string_module, CLIB_MODULE);
   void *private;
 
-  char          * (*encode)(const unsigned char *string, size_t len);
-  unsigned char * (*decode)(const char *encoded, size_t len);
+  char * (*trim)(char *string);
+  char * (*trim_right)(char *string);
+  char * (*trim_left)(char *string);
 };
 
 // `string_module` module prototypes
@@ -37,42 +37,67 @@ exports(string_module) {
 // `private` module definition
 module(private) {
   define(private, CLIB_MODULE);
-  char          * (*encode)(const unsigned char *string, size_t len);
-  unsigned char * (*decode)(const char *encoded, size_t len);
+  char * (*trim)(char *string);
+  char * (*trim_right)(char *string);
+  char * (*trim_left)(char *string);
 };
 
 
-// private `private` module string_decodesymbol
-static char * string_module_private_string_decode(const unsigned char *string, size_t len) {
-  log_trace("string_module_private_string_decode():%s/%d", string, len);
-  return(trim(b64_decode(string, len)));
+static char * string_module_private_string_trim_right(char *string){
+  log_trace("right trim():%s/%d", string);
+  char *ns;
+  char os[1024];
+
+  sprintf(&os, "%s", string);
+  ns = trim_right(os);
+  return(ns);
 }
 
 
-// private `private` module string_encode symbol
-static char * string_module_private_string_encode(const unsigned char *string, size_t len) {
-  log_trace("string_module_private_string_encode():%s/%d", string, len);
-  return(trim(b64_encode(string, len)));
+static char * string_module_private_string_trim_left(char *string){
+  log_trace("left trim():%s/%d", string);
+  char *ns;
+  char os[1024];
+
+  sprintf(&os, "%s", string);
+  ns = trim_left(os);
+  return(ns);
+}
+
+
+static char * string_module_private_string_trim(char *string){
+  log_trace("string_module_private_string_trim():%s/%d", string);
+  char *ns;
+  char os[1024];
+
+  sprintf(&os, "%s", string);
+  ns = trim(os);
+  return(ns);
 }
 
 
 // `private` module exports
 exports(private) {
   defaults(private, CLIB_MODULE_DEFAULT),
-  .encode = string_module_private_string_encode,
-  .decode = string_module_private_string_decode,
+  .trim = string_module_private_string_trim,
 };
 
 
-static char * string_module_decode(const unsigned char *string, size_t len) {
-  log_trace("string_module_private_string_decode():%s/%d", string, len);
-  return(require(private)->decode(string, len));
+static char * string_module_trim(char *string){
+  log_trace("string_module_trim():%s/%d", string);
+  return(require(private)->trim(string));
 }
 
 
-static char * string_module_encode(const unsigned char *string, size_t len) {
-  log_trace("string_module_private_string_encode():%s/%d", string, len);
-  return(require(private)->encode(string, len));
+static char * string_module_trim_left(char *string){
+  log_trace("string_module_trim_left():%s/%d", string);
+  return(require(private)->trim_left(string));
+}
+
+
+static char * string_module_trim_right(char *string){
+  log_trace("string_module_trim_right():%s/%d", string);
+  return(require(private)->trim_right(string));
 }
 
 
@@ -87,9 +112,10 @@ static int string_module_init(module(string_module) *exports) {
   }
 
   debug_private();
-  exports->encode  = string_module_encode;
-  exports->decode  = string_module_decode;
-  exports->private = require(private);
+  exports->trim       = string_module_trim;
+  exports->trim_left  = string_module_trim_left;
+  exports->trim_right = string_module_trim_right;
+  exports->private    = require(private);
   debug_private();
 
   return(0);
