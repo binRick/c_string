@@ -11,6 +11,6 @@
 #include "../include/globals.h"
 #include "../src/globals.c"
 /*******************/
-#include "../deps/trim/trim.c"
+#include "../src/module_imports.c"
 /*******************/
 

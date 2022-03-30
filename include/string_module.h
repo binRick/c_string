@@ -18,9 +18,18 @@ module(string_module) {
   defaults(string_module, CLIB_MODULE);
   void *private;
 
+  ///////////////////////////////////
+  /*         PARSE STRING          */
+  ///////////////////////////////////
+  bool (*isnumeric)(const char *num, size_t len);
+  ///////////////////////////////////
+  ///////////////////////////////////
+  /*         TRIM STRING           */
+  ///////////////////////////////////
   char * (*trim)(char *string);
   char * (*rtrim)(char *string);
   char * (*ltrim)(char *string);
+  ///////////////////////////////////
 };
 
 // `string_module` module prototypes
@@ -37,10 +46,22 @@ exports(string_module) {
 // `private` module definition
 module(private) {
   define(private, CLIB_MODULE);
+  bool (*isnumeric)(const char *num, size_t len);
   char * (*trim)(char *string);
   char * (*rtrim)(char *string);
   char * (*ltrim)(char *string);
 };
+
+
+static bool string_module_private_string_isnumeric(char *string, size_t len){
+  bool res;
+  int  is;
+
+  is = is_number(string, len);
+  log_trace("isnumeric(%s)/%d:%d", string, len, is);
+  res = (is == 1) ? true : false;
+  return(res);
+}
 
 
 static char * string_module_private_string_rtrim(char *string){
@@ -79,8 +100,17 @@ static char * string_module_private_string_trim(char *string){
 // `private` module exports
 exports(private) {
   defaults(private, CLIB_MODULE_DEFAULT),
-  .trim = string_module_private_string_trim,
+  .trim      = string_module_private_string_trim,
+  .ltrim     = string_module_private_string_ltrim,
+  .rtrim     = string_module_private_string_rtrim,
+  .isnumeric = string_module_private_string_isnumeric,
 };
+
+
+static bool string_module_isnumeric(char *string, size_t len){
+  log_trace("string_module_isnumeric():%s/%d", string);
+  return(require(private)->isnumeric(string, len));
+}
 
 
 static char * string_module_trim(char *string){
@@ -112,10 +142,11 @@ static int string_module_init(module(string_module) *exports) {
   }
 
   debug_private();
-  exports->trim    = string_module_trim;
-  exports->ltrim   = string_module_ltrim;
-  exports->rtrim   = string_module_rtrim;
-  exports->private = require(private);
+  exports->isnumeric = string_module_isnumeric;
+  exports->trim      = string_module_trim;
+  exports->ltrim     = string_module_ltrim;
+  exports->rtrim     = string_module_rtrim;
+  exports->private   = require(private);
   debug_private();
 
   return(0);

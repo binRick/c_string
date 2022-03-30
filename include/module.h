@@ -8,5 +8,5 @@
 /*******************/
 #include "log/log.c"
 /*******************/
-#include "../deps/trim/trim.h"
+#include "module_imports.h"
 /*******************/
