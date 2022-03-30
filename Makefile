@@ -30,6 +30,6 @@ tidy:
 pull:
 	@git pull
 
-push:
+push: tidy
 	@git commit -am 'automated git commit'
 	@git push
