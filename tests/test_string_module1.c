@@ -6,11 +6,7 @@
 #define MODULE_EXEC_ENABLED    false
 #define MODULE_LOG_LEVEL       LOG_TRACE
 /*******************/
-#include "include/module.h"
-/*******************/
-#include "log/log.c"
-/*******************/
-#include "src/string_module.c"
+#include "src/deps.c"
 /*******************/
 
 
@@ -85,6 +81,7 @@ void module_lifecycle(){
 int main(void) {
   init();
   module_lifecycle();
+  dbg(12345, % d);
   return(0);
 }
 /*******************/
